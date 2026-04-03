@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VAIZO M&A投資基準 — CTO向け解説</title>
+<style>
+  :root {
+    --primary: #0f172a;
+    --blue: #3b82f6;
+    --blue-light: #dbeafe;
+    --blue-dark: #1e40af;
+    --green: #10b981;
+    --green-light: #d1fae5;
+    --green-dark: #065f46;
+    --red: #ef4444;
+    --red-light: #fee2e2;
+    --red-dark: #991b1b;
+    --orange: #f59e0b;
+    --orange-light: #fef3c7;
+    --purple: #8b5cf6;
+    --purple-light: #ede9fe;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-500: #64748b;
+    --gray-700: #334155;
+    --gray-900: #0f172a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    background: var(--gray-50);
+    color: var(--gray-900);
+    line-height: 1.9;
+  }
+
+  /* ===== Hero ===== */
+  .hero {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+    color: #fff;
+    padding: 64px 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle at 30% 70%, rgba(59,130,246,0.15) 0%, transparent 50%),
+                radial-gradient(circle at 70% 30%, rgba(139,92,246,0.1) 0%, transparent 50%);
+  }
+  .hero * { position: relative; }
+  .hero .badge {
+    display: inline-block;
+    background: rgba(59,130,246,0.2);
+    border: 1px solid rgba(59,130,246,0.4);
+    padding: 6px 20px;
+    border-radius: 100px;
+    font-size: 0.85em;
+    letter-spacing: 0.05em;
+    margin-bottom: 20px;
+    color: #93c5fd;
+  }
+  .hero h1 { font-size: 2.4em; font-weight: 800; margin-bottom: 12px; }
+  .hero .sub { font-size: 1.05em; opacity: 0.7; max-width: 600px; margin: 0 auto; }
+
+  .container { max-width: 880px; margin: 0 auto; padding: 48px 24px; }
+
+  /* ===== Section Header ===== */
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8em;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 8px;
+  }
+  .section-label .dot {
+    width: 8px; height: 8px;
+    background: var(--blue);
+    border-radius: 50%;
+  }
+
+  /* ===== Card ===== */
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+    margin-bottom: 32px;
+    overflow: hidden;
+  }
+  .card-body { padding: 32px; }
+
+  /* ===== Big Number ===== */
+  .big-rules {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 24px 0;
+  }
+  .big-rule {
+    border-radius: 12px;
+    padding: 28px 24px;
+    text-align: center;
+  }
+  .big-rule .number {
+    font-size: 3em;
+    font-weight: 900;
+    line-height: 1.1;
+  }
+  .big-rule .unit {
+    font-size: 0.9em;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+  .big-rule .desc {
+    font-size: 0.85em;
+    margin-top: 8px;
+    opacity: 0.75;
+  }
+  .rule-blue { background: var(--blue-light); color: var(--blue-dark); }
+  .rule-purple { background: var(--purple-light); color: #5b21b6; }
+
+  /* ===== Analogy Box ===== */
+  .analogy {
+    background: var(--orange-light);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 24px 0;
+    border-left: 4px solid var(--orange);
+  }
+  .analogy .label {
+    font-weight: 700;
+    color: #92400e;
+    font-size: 0.85em;
+    margin-bottom: 6px;
+  }
+  .analogy p { color: #78350f; font-size: 0.95em; }
+
+  /* ===== Flow Chart ===== */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 24px 0;
+  }
+  .flow-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    position: relative;
+    padding-bottom: 24px;
+  }
+  .flow-step:last-child { padding-bottom: 0; }
+  .flow-step::before {
+    content: '';
+    position: absolute;
+    left: 19px;
+    top: 40px;
+    bottom: 0;
+    width: 2px;
+    background: var(--gray-200);
+  }
+  .flow-step:last-child::before { display: none; }
+  .flow-icon {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.9em;
+    color: #fff;
+    flex-shrink: 0;
+    z-index: 1;
+  }
+  .flow-content h4 { font-size: 1em; margin-bottom: 4px; }
+  .flow-content p { font-size: 0.9em; color: var(--gray-500); }
+
+  /* ===== Comparison Table ===== */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 24px 0;
+  }
+  .compare-col {
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .compare-col h3 {
+    font-size: 1em;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .compare-col ul {
+    list-style: none;
+    padding: 0;
+  }
+  .compare-col li {
+    padding: 6px 0;
+    font-size: 0.9em;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .compare-col li:last-child { border-bottom: none; }
+  .col-red { background: var(--red-light); }
+  .col-red h3 { color: var(--red-dark); }
+  .col-green { background: var(--green-light); }
+  .col-green h3 { color: var(--green-dark); }
+
+  /* ===== DO NOT / FOCUS ===== */
+  .policy-card {
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+  .policy-card h3 {
+    font-size: 1.15em;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .policy-card .icon-circle {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1em;
+    flex-shrink: 0;
+  }
+  .policy-card p, .policy-card li {
+    font-size: 0.95em;
+    line-height: 1.8;
+  }
+  .policy-card ul { padding-left: 20px; }
+  .policy-card li { margin-bottom: 8px; }
+  .policy-red {
+    background: #fef2f2;
+    border: 2px solid #fca5a5;
+  }
+  .policy-red h3 { color: var(--red-dark); }
+  .policy-red .icon-circle { background: var(--red); color: #fff; }
+  .policy-darkred {
+    background: #450a0a;
+    border: 2px solid #7f1d1d;
+    color: #fecaca;
+  }
+  .policy-darkred h3 { color: #fca5a5; }
+  .policy-darkred .icon-circle { background: #dc2626; color: #fff; }
+  .policy-darkred p, .policy-darkred li { color: #fecaca; }
+  .policy-green {
+    background: #f0fdf4;
+    border: 2px solid #86efac;
+  }
+  .policy-green h3 { color: var(--green-dark); }
+  .policy-green .icon-circle { background: var(--green); color: #fff; }
+
+  /* ===== Glossary ===== */
+  .glossary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .glossary-item {
+    background: var(--gray-100);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .glossary-item .term {
+    font-weight: 700;
+    color: var(--blue-dark);
+    font-size: 0.95em;
+    margin-bottom: 6px;
+  }
+  .glossary-item .def {
+    font-size: 0.88em;
+    color: var(--gray-700);
+  }
+
+  /* ===== Quote ===== */
+  .quote-box {
+    background: linear-gradient(135deg, var(--primary), #1e3a5f);
+    color: #fff;
+    border-radius: 16px;
+    padding: 40px 36px;
+    text-align: center;
+    margin: 40px 0;
+  }
+  .quote-box .text {
+    font-size: 1.25em;
+    font-weight: 700;
+    line-height: 1.8;
+    margin-bottom: 12px;
+  }
+  .quote-box .author {
+    font-size: 0.85em;
+    opacity: 0.6;
+  }
+
+  /* ===== Visual IRR Diagram ===== */
+  .irr-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 28px 0;
+    flex-wrap: wrap;
+  }
+  .irr-box {
+    border-radius: 10px;
+    padding: 16px 20px;
+    text-align: center;
+    min-width: 140px;
+  }
+  .irr-box .val { font-size: 1.6em; font-weight: 800; }
+  .irr-box .label { font-size: 0.8em; margin-top: 2px; }
+  .irr-arrow {
+    font-size: 1.5em;
+    color: var(--gray-300);
+  }
+
+  /* ===== Meter ===== */
+  .meter-section { margin: 28px 0; }
+  .meter-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .meter-label {
+    width: 100px;
+    font-size: 0.85em;
+    font-weight: 600;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .meter-bar {
+    flex: 1;
+    height: 32px;
+    background: var(--gray-100);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+  .meter-fill {
+    height: 100%;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 12px;
+    font-size: 0.8em;
+    font-weight: 700;
+    color: #fff;
+  }
+  .meter-tag {
+    font-size: 0.8em;
+    color: var(--gray-500);
+    width: 80px;
+    flex-shrink: 0;
+  }
+
+  /* ===== Scenario Table ===== */
+  .scenario-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 0.9em;
+  }
+  .scenario-table th {
+    background: var(--gray-900);
+    color: #fff;
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+  }
+  .scenario-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .scenario-table tr:nth-child(even) td { background: var(--gray-50); }
+
+  /* ===== Footer ===== */
+  .footer {
+    text-align: center;
+    padding: 40px 24px;
+    color: var(--gray-500);
+    font-size: 0.8em;
+    border-top: 1px solid var(--gray-200);
+  }
+
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 1.6em; }
+    .big-rules, .compare, .glossary-grid { grid-template-columns: 1fr; }
+    .irr-visual { flex-direction: column; }
+    .irr-arrow { transform: rotate(90deg); }
+    .container { padding: 24px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <div class="badge">CTO向け 経営方針ブリーフィング</div>
+  <h1>VAIZO M&A投資基準</h1>
+  <div class="sub">エンジニアの視点で理解する「買収・売却・投資判断」の全体像と、私たちが注力する領域</div>
+</div>
+
+<div class="container">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: 2つの絶対ルール -->
+<!-- ============================================================ -->
+<div class="section-label"><span class="dot"></span>SECTION 1</div>
+<h2 style="font-size:1.4em; margin-bottom:20px;">まず覚える：2つの絶対ルール</h2>
+
+<div class="card">
+  <div class="card-body">
+    <p style="color:var(--gray-500); margin-bottom:16px;">VAIZOのマイクロM&A事業には、例外なく守る2つのルールがある。最低ラインを守りつつ、理想を追求する。</p>
+
+    <div class="big-rules">
+      <div class="big-rule rule-blue">
+        <div class="number">25%+</div>
+        <div class="unit">IRR（年間収益率）最低ライン</div>
+        <div class="desc">最低25%以上。理想は50%を実現する</div>
+      </div>
+      <div class="big-rule rule-purple">
+        <div class="number">12ヶ月</div>
+        <div class="unit">売却までの最長期限</div>
+        <div class="desc">どんなに遅くても1年以内に売却する</div>
+      </div>
+    </div>
+
+    <div class="analogy">
+      <div class="label">エンジニア向けのたとえ</div>
+      <p>IRR 25%以上（理想は50%）とは、「100万円を投資したら、年率25〜50%のペースで増えていく」という意味。銀行預金（年率0.01%）の<strong>2,500〜5,000倍</strong>のリターンを求めているということ。なぜこんなに高い水準を求めるかというと、小型の未上場事業は不確実性が高く、そのリスクに見合うリターンが必要だから。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: IRRとは -->
+<!-- ============================================================ -->
+<div class="section-label"><span class="dot"></span>SECTION 2</div>
+<h2 style="font-size:1.4em; margin-bottom:20px;">IRRって何？ — エンジニアのためのゼロからの解説</h2>
+
+<div class="card">
+  <div class="card-body">
+    <h3 style="margin-bottom:16px;">IRR = 「この投資、年利換算すると何%？」</h3>
+
+    <p>IRR（Internal Rate of Return / 内部収益率）は、投資の「年あたりのリターン」を示す数字。プログラミングでいうと、<strong>パフォーマンスベンチマークのスコア</strong>のようなもの。異なる投資案件を同じ物差しで比較できる。</p>
+
+    <div class="analogy">
+      <div class="label">コードで考えるIRR</div>
+      <p>あるAPIサーバーの処理速度を「リクエスト/秒」で比較するように、IRRは投資の効率を「%/年」で比較する指標。サーバーAが500 req/sで、サーバーBが200 req/sなら、Aの方が効率がいい。同じように、案件AのIRRが30%で、案件BのIRRが12%なら、案件Aの方が投資効率がいい。</p>
+    </div>
+
+    <h3 style="margin:24px 0 16px;">IRRの計算イメージ</h3>
+
+    <div class="irr-visual">
+      <div class="irr-box" style="background:#fee2e2; color:#991b1b;">
+        <div class="val">-500万</div>
+        <div class="label">Year 0: 買収費用</div>
+      </div>
+      <div class="irr-arrow">&rarr;</div>
+      <div class="irr-box" style="background:#dbeafe; color:#1e40af;">
+        <div class="val">+100万</div>
+        <div class="label">Year 1: 事業の利益</div>
+      </div>
+      <div class="irr-arrow">&rarr;</div>
+      <div class="irr-box" style="background:#d1fae5; color:#065f46;">
+        <div class="val">+700万</div>
+        <div class="label">Year 1: 利益+売却</div>
+      </div>
+    </div>
+
+    <p style="text-align:center; color:var(--gray-500); font-size:0.9em;">この場合、500万を投じて12ヶ月後に合計800万を回収。IRRは約<strong>60%</strong>。VAIZOが目指す理想の水準。</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: IRRだけで判断するな -->
+<!-- ============================================================ -->
+<div class="section-label"><span class="dot"></span>SECTION 3</div>
+<h2 style="font-size:1.4em; margin-bottom:20px;">重要：IRRだけで判断してはいけない理由</h2>
+
+<div class="card">
+  <div class="card-body">
+    <p style="margin-bottom:20px;">IRRはあくまで「1つのスコア」。テストカバレッジが100%でもバグだらけのコードがあるように、IRRが高くても危険な案件はある。</p>
+
+    <h3 style="margin-bottom:16px;">IRRの4つの弱点</h3>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px;">
+      <div style="background:var(--orange-light); border-radius:10px; padding:16px;">
+        <strong style="color:#92400e;">1. 短期が有利に見える</strong>
+        <p style="font-size:0.85em; color:#78350f; margin-top:4px;">2年で2倍のIRR = 41%。7年で2倍のIRR = 10%。同じ2倍でも期間で全然違う数字になる。</p>
+      </div>
+      <div style="background:var(--orange-light); border-radius:10px; padding:16px;">
+        <strong style="color:#92400e;">2. Exit価格に左右される</strong>
+        <p style="font-size:0.85em; color:#78350f; margin-top:4px;">「最後にいくらで売れるか」を楽観的に見積もるだけでIRRは跳ね上がる。数字のお化粧がしやすい。</p>
+      </div>
+      <div style="background:var(--orange-light); border-radius:10px; padding:16px;">
+        <strong style="color:#92400e;">3. 金額が見えない</strong>
+        <p style="font-size:0.85em; color:#78350f; margin-top:4px;">IRR 50%でも投資10万円なら利益5万円。IRR 20%でも投資1000万円なら利益200万円。率だけでは金額がわからない。</p>
+      </div>
+      <div style="background:var(--orange-light); border-radius:10px; padding:16px;">
+        <strong style="color:#92400e;">4. 計算が不安定になる場合も</strong>
+        <p style="font-size:0.85em; color:#78350f; margin-top:4px;">キャッシュフローが黒字→赤字→黒字と変動すると、IRRの計算自体が不安定になることがある。</p>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom:16px;">だからIRR以外にも見る指標</h3>
+
+    <div class="glossary-grid">
+      <div class="glossary-item">
+        <div class="term">FCF（フリーキャッシュフロー）</div>
+        <div class="def">「実際に手元に残る現金」のこと。会計上の利益（PL）ではなく、現金ベースで判断する。PL上は黒字でも、設備投資や在庫が重ければ現金は残らない。<strong>まずFCFを見る</strong>。</div>
+      </div>
+      <div class="glossary-item">
+        <div class="term">MOIC（投下資本倍率）</div>
+        <div class="def">投じたお金が合計で何倍になったか。500万投じて1500万回収ならMOIC = 3.0x。IRRと違い、直感的にわかりやすい「何倍になったか」の数字。</div>
+      </div>
+      <div class="glossary-item">
+        <div class="term">回収期間</div>
+        <div class="def">投じたお金を何年で取り戻せるか。<strong>3年以内なら強い</strong>、5年以内は許容、7年以上は慎重に。VAIZOは12ヶ月以内の売却を方針としているため、特に重要。</div>
+      </div>
+      <div class="glossary-item">
+        <div class="term">下振れ耐性（悲観ケース）</div>
+        <div class="def">最悪の場合に「死なないか」を確認する。テストでいう「異常系テスト」と同じ発想。正常系（楽観ケース）で利益が出るのは当然。異常系でも致命傷にならないことが重要。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: FCFとEBITDA -->
+<!-- ============================================================ -->
+<div class="section-label"><span class="dot"></span>SECTION 4</div>
+<h2 style="font-size:1.4em; margin-bottom:20px;">FCF vs EBITDA — 「利益」と「現金」は違う</h2>
+
+<div class="card">
+  <div class="card-body">
+    <div class="analogy">
+      <div class="label">エンジニア向けのたとえ</div>
+      <p>GitHubのスター数（EBITDA）が多くても、実際のアクティブユーザー数（FCF）が少ないOSSプロジェクトがある。見た目の評価と実態は別物。<strong>事業を買うときも「見た目の利益」ではなく「実際に残る現金」で判断する</strong>。</p>
+    </div>
+
+    <h3 style="margin:20px 0 12px;">FCFの計算式</h3>
+    <div style="background:var(--gray-100); border-radius:10px; padding:20px; font-family:monospace; font-size:0.95em; margin-bottom:20px;">
+      <span style="color:var(--blue);">FCF</span> = 税引後営業利益 + 減価償却 - 設備投資 - 運転資本の増加額<br><br>
+      <span style="color:var(--gray-500);">// 要するに「最終的に手元に残る現金」</span>
+    </div>
+
+    <h3 style="margin-bottom:12px;">PLが黒字でもFCFがマイナスになるケース</h3>
+    <table class="scenario-table">
+      <thead>
+        <tr><th>項目</th><th>PL上の見え方</th><th>現金の実態</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>売掛金が多い</td><td>売上は計上済み</td><td>現金はまだ入ってきていない</td></tr>
+        <tr><td>在庫が重い</td><td>資産として計上</td><td>現金が在庫に化けて寝ている</td></tr>
+        <tr><td>設備投資が大きい</td><td>減価償却で分散</td><td>実際の支払いは一括で出ていく</td></tr>
+        <tr><td>維持費が継続的</td><td>利益は出ている</td><td>メンテコストで現金が流出し続ける</td></tr>
+      </tbody>
+    </table>
+    <p style="color:var(--red); font-weight:700; margin-top:16px; text-align:center;">PL（利益）が良くてもCF（現金）が悪い案件は買ってはいけない</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: 買う/買わない判断基準 -->
+<!-- ============================================================ -->
+<div class="section-label"><span class="dot"></span>SECTION 5</div>
+<h2 style="font-size:1.4em; margin-bottom:20px;">買う案件と買わない案件の判断基準</h2>
+
+<div class="card">
+  <div class="card-body">
+    <div class="compare">
+      <div class="compare-col col-red">
+        <h3><span style="font-size:1.2em;">&#x2717;</span> 買ってはいけない案件</h3>
+        <ul>
+          <li>EBITDAは高いがFCFが弱い</li>
+          <li>在庫・設備・売掛が重い</li>
+          <li>オーナーが抜けると崩れる</li>
+          <li>主要顧客が1〜2社に集中</li>
+          <li>契約継続に不確実性がある</li>
+          <li>Exit前提でしか成立しない</li>
+          <li>悲観ケースで即死する</li>
+          <li>成長・売却の前提が楽観的</li>
+        </ul>
+      </div>
+      <div class="compare-col col-green">
+        <h3><span style="font-size:1.2em;">&#x2713;</span> 買うべき案件</h3>
+        <ul>
+          <li>現金創出力がある</li>
+          <li>総投下額で見ても安い</li>
+          <li>下振れしても耐えられる</li>
+          <li>Exitなしでも一定の回収が見える</li>
+          <li>オーナー依存を減らせる</li>
+          <li>顧客基盤が分散している</li>
+          <li>自分たちの改善余地がある</li>
+          <li><strong>AIで価値向上が可能</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="quote-box" style="margin-top:28px;">
+      <div class="text">最終判断は<br>「儲かりそうか」ではなく「外しにくいか」で行う</div>
+      <div class="author">VAIZO M&A投資の基本方針</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: IRR水準の目安 -->
+<!-- ============================================================ -->
+<div class="section-label"><span class="dot"></span>SECTION 6</div>
+<h2 style="font-size:1.4em; margin-bottom:20px;">IRR水準の目安 — どのレベルなら検討するか</h2>
+
+<div class="card">
+  <div class="card-body">
+    <div class="meter-section">
+      <div class="meter-row">
+        <div class="meter-label">10%未満</div>
+        <div class="meter-bar">
+          <div class="meter-fill" style="width:20%; background:var(--gray-300);">見送り</div>
+        </div>
+        <div class="meter-tag" style="color:var(--gray-500);">見送り</div>
+      </div>
+      <div class="meter-row">
+        <div class="meter-label">10〜15%</div>
+        <div class="meter-bar">
+          <div class="meter-fill" style="width:35%; background:#fbbf24;">弱い</div>
+        </div>
+        <div class="meter-tag" style="color:#92400e;">よほど安全なら</div>
+      </div>
+      <div class="meter-row">
+        <div class="meter-label">15〜25%</div>
+        <div class="meter-bar">
+          <div class="meter-fill" style="width:45%; background:#fbbf24;">検討</div>
+        </div>
+        <div class="meter-tag" style="color:#92400e;">条件次第</div>
+      </div>
+      <div class="meter-row">
+        <div class="meter-label" style="font-weight:800;">25%以上</div>
+        <div class="meter-bar" style="border:2px solid var(--blue);">
+          <div class="meter-fill" style="width:60%; background:var(--blue);">VAIZO最低ライン</div>
+        </div>
+        <div class="meter-tag" style="color:var(--blue-dark); font-weight:700;">最低基準</div>
+      </div>
+      <div class="meter-row">
+        <div class="meter-label" style="font-weight:800;">50%以上</div>
+        <div class="meter-bar" style="border:2px solid var(--green);">
+          <div class="meter-fill" style="width:80%; background:var(--green);">VAIZO理想</div>
+        </div>
+        <div class="meter-tag" style="color:var(--green-dark); font-weight:700;">理想目標</div>
+      </div>
+      <div class="meter-row">
+        <div class="meter-label">70%以上</div>
+        <div class="meter-bar">
+          <div class="meter-fill" style="width:95%; background:var(--orange);">要検証</div>
+        </div>
+        <div class="meter-tag" style="color:#92400e;">前提を疑え</div>
+      </div>
+    </div>
+
+    <div class="analogy">
+      <div class="label">ポイント</div>
+      <p>VAIZOは<strong>最低25%、理想50%</strong>を基準にする。50%を実現するにはAIによるバリューアップが不可欠。一方、IRR 70%以上は「話がうますぎる」可能性がある。コードレビューで「こんなにキレイなコードが本当に動く？」と疑うのと同じ。<strong>高いIRRは歓迎するが、前提の甘さを必ず確認する</strong>。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 7: 実務の流れ -->
+<!-- ============================================================ -->
+<div class="section-label"><span class="dot"></span>SECTION 7</div>
+<h2 style="font-size:1.4em; margin-bottom:20px;">買収案件を評価する手順</h2>
+
+<div class="card">
+  <div class="card-body">
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-icon" style="background:var(--blue);">1</div>
+        <div class="flow-content">
+          <h4>総投下額を出す</h4>
+          <p>買収価格だけではなく、DD費用・仲介手数料・契約費用・PMI初期費用・運転資金追加をすべて合算する。「本当にいくらかかるのか」の全体像を把握。</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-icon" style="background:var(--purple);">2</div>
+        <div class="flow-content">
+          <h4>3ケースでFCFを組む</h4>
+          <p>悲観ケース / 標準ケース / 楽観ケース。特に<strong>悲観ケースでも致命傷にならないか</strong>を最重視。</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-icon" style="background:var(--green);">3</div>
+        <div class="flow-content">
+          <h4>保有期間とExit前提を置く</h4>
+          <p>VAIZOは最長12ヶ月。Exit EBITDA × Exit Multipleで売却想定価格を算出。<strong>売れなかった場合でも成立するか</strong>を必ず確認。</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-icon" style="background:var(--orange);">4</div>
+        <div class="flow-content">
+          <h4>5つの指標を出力する</h4>
+          <p>IRR / MOIC / 回収期間 / 年次FCF / 累積回収額 — この5つをセットで見て総合判断。</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-icon" style="background:var(--red);">5</div>
+        <div class="flow-content">
+          <h4>定性チェック</h4>
+          <p>オーナー依存度・顧客集中度・属人性・AIによる改善余地。数字では見えない「構造的なリスク」をここで確認。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 8: VAIZOの事業方針 -->
+<!-- ============================================================ -->
+<div class="section-label"><span class="dot"></span>SECTION 8 — 最重要</div>
+<h2 style="font-size:1.4em; margin-bottom:20px;">VAIZOの事業方針：やること・やらないこと</h2>
+
+<div class="card" style="box-shadow: 0 4px 24px rgba(0,0,0,0.08);">
+  <div class="card-body">
+
+    <!-- やらないこと -->
+    <div class="policy-card policy-red">
+      <h3>
+        <span class="icon-circle">&#x2717;</span>
+        やらないこと
+      </h3>
+      <p>将来のM&Aおよび売却において、<strong>バリューアップに資さない（もしくは効果の薄い）業務改善</strong>や、<strong>業界別のSaaS</strong>は作らない。</p>
+      <ul style="margin-top:12px;">
+        <li>売却時の企業価値向上に直結しない「ただの改善」に時間を使わない</li>
+        <li>特定業界に特化したSaaSを開発する方向には進まない</li>
+        <li>バリューアップの道筋が見えない業務のシステム化は行わない</li>
+      </ul>
+    </div>
+
+    <!-- 絶対にやらないこと -->
+    <div class="policy-card policy-darkred">
+      <h3>
+        <span class="icon-circle">&#x2716;</span>
+        絶対にやらないこと
+      </h3>
+      <p><strong>社員数が何人もいるような製造業などは、絶対に買収しない。</strong></p>
+      <ul style="margin-top:12px;">
+        <li>人件費が固定費として重くのしかかり、FCFを圧迫する</li>
+        <li>労務リスク（解雇規制・社会保険・労働紛争）が極めて高い</li>
+        <li>AIによる自動化の効果が限定的（物理作業が多い）</li>
+        <li>12ヶ月以内の売却が極めて困難</li>
+      </ul>
+    </div>
+
+    <!-- 注力すべきこと -->
+    <div class="policy-card policy-green">
+      <h3>
+        <span class="icon-circle">&#x2713;</span>
+        優先順位を上げて注力すべき領域
+      </h3>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-top:16px;">
+        <div style="background:#fff; border:2px solid #86efac; border-radius:10px; padding:20px;">
+          <div style="font-weight:700; color:var(--green-dark); margin-bottom:8px; font-size:1.05em;">(a) 買収ターゲット</div>
+          <p style="font-size:0.93em; color:var(--gray-700);">
+            <strong>一人社長が経営</strong>しており、<strong>業務の9割方がAIで代替できる</strong>ような事業。
+          </p>
+          <ul style="font-size:0.88em; color:var(--gray-500); margin-top:8px; padding-left:16px;">
+            <li>オーナー依存を排除しやすい</li>
+            <li>人件費リスクが極小</li>
+            <li>AI導入による劇的な価値向上が見込める</li>
+            <li>12ヶ月以内の売却に適した規模感</li>
+          </ul>
+        </div>
+        <div style="background:#fff; border:2px solid #86efac; border-radius:10px; padding:20px;">
+          <div style="font-weight:700; color:var(--green-dark); margin-bottom:8px; font-size:1.05em;">(b) 開発すべきAI</div>
+          <p style="font-size:0.93em; color:var(--gray-700);">
+            そこで発生している<strong>煩雑な業務や事業活動</strong>を対象に、<strong>AIによる業務の無人化</strong>を開発する。
+          </p>
+          <ul style="font-size:0.88em; color:var(--gray-500); margin-top:8px; padding-left:16px;">
+            <li>買収先のバリューアップに直結する開発</li>
+            <li>売却時の企業価値を最大化するためのAI</li>
+            <li>汎用SaaSではなく、事業特化の無人化</li>
+            <li>再現性のある開発プロセスを構築</li>
+          </ul>
+        </div>
+        <div style="background:#fff; border:2px solid #86efac; border-radius:10px; padding:20px;">
+          <div style="font-weight:700; color:var(--green-dark); margin-bottom:8px; font-size:1.05em;">(c) AI開発の最重要KPI</div>
+          <p style="font-size:0.93em; color:var(--gray-700);">
+            開発するAIが<strong>売上を上げ、コストを下げ、残るFCF（フリーキャッシュフロー）を最大化する</strong>こと。
+          </p>
+          <ul style="font-size:0.88em; color:var(--gray-500); margin-top:8px; padding-left:16px;">
+            <li><strong>売上向上</strong>：AIが営業・集客・顧客対応を自動化し、売上を伸ばす</li>
+            <li><strong>コスト削減</strong>：人件費・外注費・業務コストをAIで圧縮する</li>
+            <li><strong>FCF最大化</strong>：上記の結果として手元に残る現金を最大化する</li>
+            <li>FCFの改善 = 売却時の企業価値（EBITDA × Multiple）に直結</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 9: ビジネスモデル全体像 -->
+<!-- ============================================================ -->
+<div class="section-label"><span class="dot"></span>SECTION 9</div>
+<h2 style="font-size:1.4em; margin-bottom:20px;">VAIZOのビジネスモデル全体像</h2>
+
+<div class="card">
+  <div class="card-body">
+    <div style="display:flex; flex-direction:column; gap:0; align-items:center;">
+
+      <div style="background:var(--blue-light); border-radius:12px; padding:20px 28px; text-align:center; width:100%; max-width:500px;">
+        <div style="font-weight:700; color:var(--blue-dark); font-size:1.05em;">STEP 1 : 買収</div>
+        <p style="font-size:0.9em; color:var(--blue-dark); margin-top:4px;">一人社長 × AIで9割代替可能な事業を取得</p>
+        <p style="font-size:0.8em; color:var(--gray-500); margin-top:4px;">IRR 25%以上（理想50%）/ FCF黒字 / 外しにくい案件のみ</p>
+      </div>
+
+      <div style="font-size:2em; color:var(--gray-300); padding:8px 0;">&#x2193;</div>
+
+      <div style="background:var(--green-light); border-radius:12px; padding:20px 28px; text-align:center; width:100%; max-width:500px; border:2px solid #10b981;">
+        <div style="font-weight:700; color:var(--green-dark); font-size:1.05em;">STEP 2 : AI無人化開発（バリューアップ）</div>
+        <p style="font-size:0.9em; color:var(--green-dark); margin-top:4px;">AIで売上を上げ、コストを下げ、<strong>FCFを最大化</strong>する</p>
+        <p style="font-size:0.8em; color:var(--gray-500); margin-top:4px;">ここがCTO・開発チームの主戦場。FCFの改善が売却価値に直結する</p>
+      </div>
+
+      <div style="font-size:2em; color:var(--gray-300); padding:8px 0;">&#x2193;</div>
+
+      <div style="background:var(--purple-light); border-radius:12px; padding:20px 28px; text-align:center; width:100%; max-width:500px;">
+        <div style="font-weight:700; color:#5b21b6; font-size:1.05em;">STEP 3 : 売却（12ヶ月以内）</div>
+        <p style="font-size:0.9em; color:#5b21b6; margin-top:4px;">AI無人化された事業を、高い評価額で売却</p>
+        <p style="font-size:0.8em; color:var(--gray-500); margin-top:4px;">MOIC・IRRで投資リターンを最大化</p>
+      </div>
+
+      <div style="font-size:2em; color:var(--gray-300); padding:8px 0;">&#x21BB;</div>
+
+      <p style="color:var(--gray-500); font-size:0.9em; text-align:center;">このサイクルを繰り返し、スケールさせる</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 10: 判断原則 -->
+<!-- ============================================================ -->
+<div class="section-label"><span class="dot"></span>SECTION 10</div>
+<h2 style="font-size:1.4em; margin-bottom:20px;">10の判断原則 — 全メンバーが共有すべきルール</h2>
+
+<div class="card">
+  <div class="card-body">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+      <div style="background:var(--gray-100); border-radius:8px; padding:14px 16px; display:flex; align-items:flex-start; gap:10px;">
+        <span style="background:var(--gray-900); color:#fff; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.75em; font-weight:700; flex-shrink:0;">1</span>
+        <span style="font-size:0.9em;">IRR単独では買収判断しない</span>
+      </div>
+      <div style="background:var(--gray-100); border-radius:8px; padding:14px 16px; display:flex; align-items:flex-start; gap:10px;">
+        <span style="background:var(--gray-900); color:#fff; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.75em; font-weight:700; flex-shrink:0;">2</span>
+        <span style="font-size:0.9em;">まずFCF（手元に残る現金）を見る</span>
+      </div>
+      <div style="background:var(--gray-100); border-radius:8px; padding:14px 16px; display:flex; align-items:flex-start; gap:10px;">
+        <span style="background:var(--gray-900); color:#fff; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.75em; font-weight:700; flex-shrink:0;">3</span>
+        <span style="font-size:0.9em;">EBITDAだけで良し悪しを決めない</span>
+      </div>
+      <div style="background:var(--gray-100); border-radius:8px; padding:14px 16px; display:flex; align-items:flex-start; gap:10px;">
+        <span style="background:var(--gray-900); color:#fff; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.75em; font-weight:700; flex-shrink:0;">4</span>
+        <span style="font-size:0.9em;">取得価格ではなく<strong>総投下額</strong>で判断する</span>
+      </div>
+      <div style="background:var(--gray-100); border-radius:8px; padding:14px 16px; display:flex; align-items:flex-start; gap:10px;">
+        <span style="background:var(--gray-900); color:#fff; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.75em; font-weight:700; flex-shrink:0;">5</span>
+        <span style="font-size:0.9em;">Exit前提より<strong>保有中の回収力</strong>を重視</span>
+      </div>
+      <div style="background:var(--gray-100); border-radius:8px; padding:14px 16px; display:flex; align-items:flex-start; gap:10px;">
+        <span style="background:var(--gray-900); color:#fff; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.75em; font-weight:700; flex-shrink:0;">6</span>
+        <span style="font-size:0.9em;"><strong>悲観ケースで死なない</strong>案件を優先</span>
+      </div>
+      <div style="background:var(--gray-100); border-radius:8px; padding:14px 16px; display:flex; align-items:flex-start; gap:10px;">
+        <span style="background:var(--gray-900); color:#fff; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.75em; font-weight:700; flex-shrink:0;">7</span>
+        <span style="font-size:0.9em;">オーナー依存・顧客依存・属人性を厳しく見る</span>
+      </div>
+      <div style="background:var(--gray-100); border-radius:8px; padding:14px 16px; display:flex; align-items:flex-start; gap:10px;">
+        <span style="background:var(--gray-900); color:#fff; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.75em; font-weight:700; flex-shrink:0;">8</span>
+        <span style="font-size:0.9em;">自分たちが改善できる案件だけを買う</span>
+      </div>
+      <div style="background:var(--gray-100); border-radius:8px; padding:14px 16px; display:flex; align-items:flex-start; gap:10px;">
+        <span style="background:var(--gray-900); color:#fff; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.75em; font-weight:700; flex-shrink:0;">9</span>
+        <span style="font-size:0.9em;">高いIRRは歓迎するが、<strong>前提の甘さ</strong>を必ず疑う</span>
+      </div>
+      <div style="background:var(--gray-100); border-radius:8px; padding:14px 16px; display:flex; align-items:flex-start; gap:10px;">
+        <span style="background:var(--gray-900); color:#fff; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.75em; font-weight:700; flex-shrink:0;">10</span>
+        <span style="font-size:0.9em;">最終判断は「儲かりそうか」ではなく<strong>「外しにくいか」</strong></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== QUOTE ===== -->
+<div class="quote-box">
+  <div class="text">VAIZOの開発は「プロダクトを作る」のではない。<br>「事業をAIで無人化し、企業価値を最大化して売却する」ための開発である。</div>
+  <div class="author">全ての開発判断は、この方針に基づいて行う</div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  株式会社VAIZO | CEO経営戦略室<br>
+  2026-04-03 作成 | CTO向け経営方針ブリーフィング
+</div>
+
+</div>
+</body>
+</html>
